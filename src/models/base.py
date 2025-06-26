@@ -48,8 +48,11 @@ class Base:
     为所有数据库模型提供公共字段和方法
     """
     
+    # 允许使用旧式类型注解
+    __allow_unmapped__ = True
+    
     # 主键：使用UUID作为主键，提供更好的分布式支持
-    id: uuid.UUID = Column(
+    id = Column(
         UUID(as_uuid=True),
         primary_key=True,
         default=uuid.uuid4,
@@ -58,7 +61,7 @@ class Base:
     )
     
     # 创建时间：记录创建时间，使用数据库时间
-    created_at: datetime = Column(
+    created_at = Column(
         DateTime(timezone=True),
         server_default=text("CURRENT_TIMESTAMP"),
         nullable=False,
@@ -66,7 +69,7 @@ class Base:
     )
     
     # 更新时间：记录最后更新时间，自动更新
-    updated_at: datetime = Column(
+    updated_at = Column(
         DateTime(timezone=True),
         server_default=text("CURRENT_TIMESTAMP"),
         onupdate=datetime.now,
@@ -75,21 +78,21 @@ class Base:
     )
     
     # 创建者ID：记录创建该记录的用户ID
-    created_by: uuid.UUID = Column(
+    created_by = Column(
         UUID(as_uuid=True),
         nullable=True,
         comment="创建者ID"
     )
     
     # 更新者ID：记录最后更新该记录的用户ID
-    updated_by: uuid.UUID = Column(
+    updated_by = Column(
         UUID(as_uuid=True),
         nullable=True,
         comment="更新者ID"
     )
     
     # 备注字段：用于存储额外信息
-    remark: str = Column(
+    remark = Column(
         String(500),
         nullable=True,
         comment="备注信息"
