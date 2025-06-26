@@ -10,7 +10,8 @@
       "Bash(python:*)",
       "Bash(source:*)",
       "Bash(pip install:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(timeout 10 python src/main.py)"
     ],
     "deny": []
   }

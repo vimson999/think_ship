@@ -10,6 +10,7 @@ flower==2.0.1  # Celery监控
 
 # 数据库
 asyncpg==0.29.0  # 异步PostgreSQL
+psycopg2-binary==2.9.9  # 同步PostgreSQL
 sqlalchemy[asyncio]==2.0.25
 alembic==1.13.1
 redis[hiredis]==5.0.1  # 使用hiredis提升性能

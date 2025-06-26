@@ -96,6 +96,10 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = Field(default="think_ship", env="POSTGRES_DB")
     POSTGRES_PORT: int = Field(default=5432, env="POSTGRES_PORT")
     
+    # PostgreSQL管理员配置（用于创建表）
+    POSTGRES_ADMIN_USER: str = Field(default="postgres", env="POSTGRES_ADMIN_USER")
+    POSTGRES_ADMIN_PASSWORD: str = Field(default="", env="POSTGRES_ADMIN_PASSWORD")
+    
     DATABASE_URL: Optional[PostgresDsn] = None
     
     @validator("DATABASE_URL", pre=True)
