@@ -60,8 +60,22 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # 应用启动事件
     logger.info("🚀 头条矩阵系统启动中...")
     
-    # TODO: 初始化数据库连接池
-    # TODO: 初始化Redis连接
+    # 初始化数据库连接池
+    try:
+        from src.infrastructure.database import init_database
+        await init_database()
+        logger.info("✅ 数据库连接初始化完成")
+    except Exception as e:
+        logger.error(f"❌ 数据库连接初始化失败: {e}")
+    
+    # 初始化Redis连接
+    try:
+        from src.infrastructure.cache import redis_cache
+        await redis_cache.connect()
+        logger.info("✅ Redis连接初始化完成")
+    except Exception as e:
+        logger.error(f"❌ Redis连接初始化失败: {e}")
+    
     # TODO: 验证AI服务连接
     # TODO: 启动定时任务
     
@@ -72,8 +86,22 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # 应用关闭事件  
     logger.info("🛑 头条矩阵系统关闭中...")
     
-    # TODO: 关闭数据库连接池
-    # TODO: 关闭Redis连接
+    # 关闭数据库连接池
+    try:
+        from src.infrastructure.database import close_database
+        await close_database()
+        logger.info("✅ 数据库连接关闭完成")
+    except Exception as e:
+        logger.error(f"❌ 数据库连接关闭失败: {e}")
+    
+    # 关闭Redis连接
+    try:
+        from src.infrastructure.cache import redis_cache
+        await redis_cache.disconnect()
+        logger.info("✅ Redis连接关闭完成")
+    except Exception as e:
+        logger.error(f"❌ Redis连接关闭失败: {e}")
+    
     # TODO: 停止定时任务
     
     logger.info("✅ 系统清理完成")
