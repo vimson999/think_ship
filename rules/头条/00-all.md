@@ -24,7 +24,7 @@ graph TB
     subgraph "数据采集层"
         A1[微博热搜]
         A2[知乎热榜]
-        A3[百度热点]
+        A3[抖音热点]
         A4[其他源]
     end
     
@@ -304,8 +304,6 @@ graph TB
     subgraph "数据层"
         D1[PostgreSQL]
         D2[Redis]
-        D3[MinIO]
-        D4[ElasticSearch]
     end
     
     subgraph "基础设施"
