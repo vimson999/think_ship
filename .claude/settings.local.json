@@ -4,7 +4,12 @@
       "Bash(mkdir:*)",
       "Bash(python3.12:*)",
       "Bash(git checkout:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(tree:*)",
+      "Bash(git push:*)",
+      "Bash(python:*)",
+      "Bash(source:*)",
+      "Bash(pip install:*)"
     ],
     "deny": []
   }
