@@ -59,12 +59,17 @@ class TableCreator:
         self.host = settings.POSTGRES_SERVER
         self.port = settings.POSTGRES_PORT
         
+        # URL编码密码中的特殊字符
+        import urllib.parse
+        encoded_admin_password = urllib.parse.quote_plus(self.admin_password)
+        encoded_app_password = urllib.parse.quote_plus(self.app_password)
+        
         # 管理员连接到目标数据库的URL（用于创建表）
-        self.admin_db_url = f"postgresql://{self.admin_user}:{self.admin_password}@{self.host}:{self.port}/{self.database_name}"
+        self.admin_db_url = f"postgresql://{self.admin_user}:{encoded_admin_password}@{self.host}:{self.port}/{self.database_name}"
         
         # 应用数据库连接URL
-        self.app_db_url = f"postgresql://{self.app_user}:{self.app_password}@{self.host}:{self.port}/{self.database_name}"
-        self.async_app_db_url = f"postgresql+asyncpg://{self.app_user}:{self.app_password}@{self.host}:{self.port}/{self.database_name}"
+        self.app_db_url = f"postgresql://{self.app_user}:{encoded_app_password}@{self.host}:{self.port}/{self.database_name}"
+        self.async_app_db_url = f"postgresql+asyncpg://{self.app_user}:{encoded_app_password}@{self.host}:{self.port}/{self.database_name}"
     
     def test_connection(self) -> bool:
         """
@@ -249,20 +254,22 @@ class TableCreator:
                     ON CONFLICT (name) DO NOTHING
                 """))
                 
-                # 插入默认内容模板
-                conn.execute(text("""
-                    INSERT INTO content_templates (id, name, display_name, description, category, template_type, structure, prompt_template, is_active, created_at, updated_at)
-                    VALUES 
-                        (uuid_generate_v4(), 'tech_article', '科技文章模板', '用于生成科技类文章的模板', 'tech', 'article',
-                         '{"sections": ["intro", "main", "conclusion"], "length": "1500-2000"}'::jsonb,
-                         '请根据以下热点话题，写一篇{length}字的科技文章。标题：{title}，内容要点：{points}。文章应该包含引言、主体和结论三个部分。',
-                         true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-                        (uuid_generate_v4(), 'news_brief', '新闻简报模板', '用于生成新闻简报的模板', 'news', 'short_article',
-                         '{"sections": ["headline", "summary", "details"], "length": "800-1200"}'::jsonb,
-                         '请根据以下新闻热点，写一篇{length}字的新闻简报。事件：{title}，关键信息：{points}。',
-                         true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-                    ON CONFLICT (name) DO NOTHING
-                """))
+                # 插入默认内容模板（移除ON CONFLICT因为没有唯一约束）
+                try:
+                    conn.execute(text("""
+                        INSERT INTO content_templates (id, name, display_name, description, category, template_type, structure, prompt_template, is_active, created_at, updated_at)
+                        VALUES 
+                            (uuid_generate_v4(), 'tech_article', '科技文章模板', '用于生成科技类文章的模板', 'tech', 'article',
+                             '{"sections": ["intro", "main", "conclusion"], "length": "1500-2000"}'::jsonb,
+                             '请根据以下热点话题，写一篇{length}字的科技文章。标题：{title}，内容要点：{points}。文章应该包含引言、主体和结论三个部分。',
+                             true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+                            (uuid_generate_v4(), 'news_brief', '新闻简报模板', '用于生成新闻简报的模板', 'news', 'short_article',
+                             '{"sections": ["headline", "summary", "details"], "length": "800-1200"}'::jsonb,
+                             '请根据以下新闻热点，写一篇{length}字的新闻简报。事件：{title}，关键信息：{points}。',
+                             true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                    """))
+                except Exception as e:
+                    logger.warning(f"⚠️ 内容模板插入失败（可能已存在）: {e}")
                 
                 conn.commit()
             
